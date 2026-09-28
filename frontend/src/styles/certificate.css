@@ -1,0 +1,200 @@
+/*
+ * Certificate of completion.
+ *
+ * The sheet is drawn in millimetres at A4 landscape, so what the admin sees on
+ * screen is exactly what comes out of the printer or "Save as PDF". The on-screen
+ * preview is the same sheet scaled down; nothing is laid out twice.
+ */
+
+.cert-sheet {
+  --cert-teal: #1f6f73;
+  --cert-teal-2: #3f9c9c;
+  --cert-ink: #1b2430;
+  --cert-navy: #01153a;
+
+  width: 297mm;
+  height: 210mm;
+  box-sizing: border-box;
+  padding: 7mm;
+  overflow: hidden;
+  position: relative;
+  color: var(--cert-ink);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  background:
+    repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 2mm, transparent 2mm 4mm),
+    linear-gradient(135deg, #256f74 0%, #4aa7a4 50%, #256f74 100%);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.cert-frame {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 3.5mm;
+  background: #dfeeea;
+  border: 1.2mm solid var(--cert-teal);
+}
+
+.cert-inner {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10mm 24mm 9mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: radial-gradient(ellipse at center, #ffffff 0%, #f7faf8 70%, #eef4f1 100%);
+  border: .5mm solid var(--cert-teal);
+  outline: .25mm solid var(--cert-teal);
+  outline-offset: -2mm;
+}
+
+/* faint wordmark behind the text, like the institute name on printed stock */
+.cert-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font: 700 30mm/1 Georgia, serif;
+  letter-spacing: 3mm;
+  color: rgba(31, 111, 115, .045);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.cert-inner > *:not(.cert-watermark) { position: relative; }
+
+.cert-top {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  font: 600 3mm/1 Arial, Helvetica, sans-serif;
+  color: #5b6770;
+  letter-spacing: .2mm;
+}
+
+.cert-logo {
+  height: 20mm;
+  margin-top: 2mm;
+}
+
+.cert-org {
+  margin-top: 6mm;
+  font-size: 11mm;
+  letter-spacing: 1mm;
+  color: var(--cert-navy);
+}
+
+.cert-sub {
+  margin-top: 2mm;
+  font-size: 5mm;
+  letter-spacing: .6mm;
+  color: #2c3a44;
+}
+
+.cert-title {
+  margin-top: 6mm;
+  font-size: 8.5mm;
+  font-style: italic;
+  color: var(--cert-teal);
+}
+
+.cert-small {
+  margin-top: 5mm;
+  font-size: 4.6mm;
+  color: #3a4650;
+}
+
+.cert-name,
+.cert-course {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4mm;
+  color: #111;
+  min-width: 120mm;
+  padding-bottom: .8mm;
+}
+
+.cert-name { margin-top: 3mm; font-size: 8.5mm; }
+.cert-course { margin-top: 3mm; font-size: 7mm; }
+
+/* an empty field shows as a line to write on, like the blank on printed stock */
+.cert-blank {
+  border-bottom: .3mm dashed #9aa5ad;
+  color: transparent;
+}
+
+.cert-issued {
+  margin-top: 6mm;
+  font-size: 4.6mm;
+  color: #3a4650;
+}
+
+.cert-signs {
+  margin-top: auto;
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4mm;
+}
+
+.cert-sign {
+  width: 55mm;
+  text-align: center;
+  font: 700 3.6mm/1.2 Georgia, serif;
+  color: #2c3a44;
+}
+
+.cert-sign-line {
+  height: 12mm;
+  border-bottom: .3mm solid #2c3a44;
+  margin-bottom: 1.5mm;
+}
+
+/* ------------------------------------------------------------------ */
+/* Admin page                                                          */
+/* ------------------------------------------------------------------ */
+
+.cert-preview {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 6px 24px rgba(1, 21, 58, .15);
+}
+
+.cert-preview-scale {
+  transform-origin: top left;
+}
+
+/* ------------------------------------------------------------------ */
+/* Printing: only the certificate, one A4 landscape page, no margins   */
+/* ------------------------------------------------------------------ */
+
+.cert-print-root { display: none; }
+
+@page certificate {
+  size: A4 landscape;
+  margin: 0;
+}
+
+@media print {
+  body.cert-printing > *:not(.cert-print-root) { display: none !important; }
+  body.cert-printing {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  body.cert-printing .cert-print-root {
+    display: block;
+    page: certificate;
+  }
+  body.cert-printing .cert-print-root .cert-sheet {
+    /* a hair under the page height so rounding never spills onto a second page */
+    height: 209.5mm;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+}
