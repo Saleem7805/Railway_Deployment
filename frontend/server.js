@@ -15,6 +15,13 @@ app.use(
     target: BACKEND_URL,
     changeOrigin: true,
     pathFilter: '/api',
+    on: {
+      proxyReq: (proxyReq) => {
+        // The browser talks to this same server, so CORS isn't needed.
+        // Removing Origin stops Spring Boot from rejecting the request.
+        proxyReq.removeHeader('origin');
+      },
+    },
   })
 );
 
